@@ -1,3 +1,5 @@
+package src;
+
 public class NotificationService {
     private final Notification emailNotifier;
     private final Notification smsNotifier;
