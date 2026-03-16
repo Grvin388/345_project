@@ -23,7 +23,7 @@ public class NotificationService {
     }
 
     private void notifyUser(User user, String message) {
-        // send to whichever contact info exists
+        
         if (user.getEmail() != null && !user.getEmail().isBlank()) {
             emailNotifier.send(user.getEmail(), message);
         }
