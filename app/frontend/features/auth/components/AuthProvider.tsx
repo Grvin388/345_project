@@ -36,7 +36,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => signOut(auth);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticating }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, logout, isAuthenticating }}
+    >
       {children}
     </AuthContext.Provider>
   );
