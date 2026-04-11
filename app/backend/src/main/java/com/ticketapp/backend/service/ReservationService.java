@@ -11,12 +11,16 @@ import java.util.List;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final EmailService emailService;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            EmailService emailService
+    ) {
         this.reservationRepository = reservationRepository;
+        this.emailService = emailService;
     }
 
-    // return ticket where the status is not cancelled
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
@@ -37,7 +41,19 @@ public class ReservationService {
         reservation.setUserEmail(userEmail);
         reservation.setStatus("CONFIRMED");
 
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        if (userEmail != null && !userEmail.isBlank()) {
+            try {
+                emailService.sendReservationConfirmation(userEmail, savedReservation);
+            } catch (Exception e) {
+                System.err.println("Failed to send confirmation email: " + e.getMessage());
+            }
+        } else {
+            System.out.println("No email found for user UID: " + userUid);
+        }
+
+        return savedReservation;
     }
 
     public Reservation cancelReservation(Long reservationId, String userUid) {
