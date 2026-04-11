@@ -24,7 +24,7 @@ export function Navbar() {
           <Link href="/" className={styles.navLink}>
             Browse Events
           </Link>
-          <Link href="/reservations" className={styles.navLink}>
+          <Link href="/my-tickets" className={styles.navLink}>
             My Tickets
           </Link>
           <Link href="/admin" className={styles.navLink}>
@@ -61,7 +61,12 @@ export function Navbar() {
             </div>
           ) : (
             <>
-              <Button variant="ghost" size="sm" onClick={login} disabled={isAuthenticating}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={login}
+                disabled={isAuthenticating}
+              >
                 Sign In
               </Button>
               <Button
