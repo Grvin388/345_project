@@ -1,37 +1,86 @@
 # TicketReserve 🎟️
 
-TicketReserve is a modern, high-performance ticket reservation platform designed for university campus events. Built with a micro-feature architecture, it ensures a seamless user experience from event discovery to secure checkout.
-
-## 🚀 Core Features
-
-- **Dynamic Event Discovery**: Real-time browsing of campus events with category filtering.
-- **Secure Authentication**: Integrated Firebase Google Auth with persistent sessions.
-- **Role-Based Access**: Specialized views for standard users and administrators.
-- **Responsive Design**: Fully optimized for mobile and desktop using Tailwind CSS.
-- **Action-Based Guards**: Browse freely, but authenticate securely to reserve tickets.
+TicketReserve is a modern ticket reservation platform for university campus events. It provides a smooth experience from browsing events to secure checkout.
 
 ---
 
-## 🛠️ Technology Stack
+## 🚀 Features
 
-| Layer | Technology |
-| :--- | :--- |
-| **Frontend** | Next.js 16 (App Router), TypeScript, Tailwind CSS |
-| **UI Components** | Shadcn UI, Lucide Icons |
-| **State/Auth** | React Context API, Firebase Authentication |
-| **Backend** | Java Spring Boot, Spring Security |
-| **Build Tool** | Maven / NPM |
+- Real-time event discovery with category filtering  
+- Google authentication via Firebase  
+- Role-based access (users & admins)  
+- Responsive UI (mobile + desktop)  
+- Secure ticket reservation flow  
+
+---
+
+## 🛠️ Tech Stack
+
+- Frontend: Next.js, TypeScript, Tailwind CSS  
+- Backend: Spring Boot, Spring Security  
+- Auth: Firebase Authentication  
+- UI: Shadcn UI, Lucide Icons  
+- Build Tools: npm, Maven  
 
 ---
 
 ## 📂 Project Structure
 
-```text
-├── frontend/             # Next.js Application
-│   ├── app/              # App Router (Pages & Layouts)
-│   ├── components/       # Global UI (Navbar, UI library)
-│   ├── features/         # Feature-based logic (Auth, Events)
-│   └── lib/              # Firebase & API configurations
-└── backend/              # Spring Boot Application
-    ├── src/main/java     # Controllers, Services, Models
-    └── src/main/resources# application.properties & SQL
+frontend/   # Next.js app  
+backend/    # Spring Boot app  
+
+---
+
+## ⚙️ Requirements
+
+- Node.js + npm  
+- Java (JDK 17+)  
+- Maven (optional if using wrapper)  
+- firebase file to put inside backend ressource folder
+
+---
+
+## ▶️ Running the App
+
+Run frontend and backend at the same time in separate terminals.
+
+---
+
+### Frontend
+
+cd frontend  
+npm install  
+npm run dev  
+
+Runs on: http://localhost:5173  
+
+---
+
+### Backend
+
+cd backend  
+
+Mac / Linux:  
+./mvnw spring-boot:run  
+
+Windows:  
+mvnw.cmd spring-boot:run  
+
+If Maven wrapper is not included:  
+mvn spring-boot:run  
+
+Runs on: http://localhost:8080  
+
+---
+
+## ⚠️ Notes
+
+- Both services must be running  
+- Ensure ports 5173 and 8080 are available  
+- Install dependencies before starting  
+
+---
+
+## 👨‍💻 Author
+
+Alex Luangxay, Yassine Abdellatif, Gavin Chock-Chiong
