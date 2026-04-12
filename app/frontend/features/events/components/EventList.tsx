@@ -9,8 +9,8 @@ import { Calendar, MapPin, Search } from "lucide-react";
 import styles from "../style/Events.module.css";
 
 export function EventList() {
-  const { events, searchQuery, setSearchQuery } = useEvents();
-  const { reserve, loadingEventId, error, successEventId } = useReserveEvent();
+  const { events, loading, error, searchQuery, setSearchQuery } = useEvents();
+  const { reserve, loadingEventId, successEventId, error: reserveError } = useReserveEvent();
 
   return (
     <div className="space-y-10">
@@ -30,56 +30,68 @@ export function EventList() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {events.length > 0 ? (
-          events.map((event) => (
-            <Card key={event.id} className={styles.eventCard}>
-              <div className={styles.imagePlaceholder}>
-                <span className="text-xs font-medium uppercase tracking-widest">
-                  Preview
-                </span>
-              </div>
+      {reserveError && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+          {reserveError}
+        </div>
+      )}
 
-              <div className={styles.cardHeader}>
-                <span className={styles.categoryBadge}>{event.category}</span>
-                <h3 className={styles.eventTitle}>{event.title}</h3>
-
-                <div className={styles.detailRow}>
-                  <Calendar className="h-4 w-4" />
-                  <span>{event.date}</span>
+      {loading ? (
+        <div className="py-20 text-center">
+          <p className="text-slate-400 text-lg italic">Loading events...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {events.length > 0 ? (
+            events.map((event) => (
+              <Card key={event.id} className={styles.eventCard}>
+                <div className={styles.imagePlaceholder}>
+                  <span className="text-xs font-medium uppercase tracking-widest">
+                    Preview
+                  </span>
                 </div>
 
-                <div className={styles.detailRow}>
-                  <MapPin className="h-4 w-4" />
-                  <span>{event.location}</span>
+                <div className={styles.cardHeader}>
+                  <span className={styles.categoryBadge}>{event.category}</span>
+                  <h3 className={styles.eventTitle}>{event.title}</h3>
+
+                  <div className={styles.detailRow}>
+                    <Calendar className="h-4 w-4" />
+                    <span>{event.date}</span>
+                  </div>
+
+                  <div className={styles.detailRow}>
+                    <MapPin className="h-4 w-4" />
+                    <span>{event.location}</span>
+                  </div>
+
+                  {successEventId === event.id && (
+                    <p className="mt-3 text-sm text-green-600 font-medium">
+                      Ticket reserved successfully.
+                    </p>
+                  )}
                 </div>
 
-                {successEventId === Number(event.id) && (
-                  <p className="mt-3 text-sm text-green-600 font-medium">
-                    Ticket reserved successfully.
-                  </p>
-                )}
-              </div>
-
-              <div className={styles.cardFooter}>
-                <Button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-5"
-                  onClick={() => reserve(Number(event.id), 1)}
-                  disabled={loadingEventId === Number(event.id)}
-                >
-                  {loadingEventId === Number(event.id) ? "Reserving..." : "Reserve Ticket"}
-                </Button>
-              </div>
-            </Card>
-          ))
-        ) : (
-          <div className="col-span-full py-20 text-center">
-            <p className="text-slate-400 text-lg italic">
-              No events found matching your search.
-            </p>
-          </div>
-        )}
-      </div>
+                <div className={styles.cardFooter}>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-5"
+                    onClick={() => reserve(event.id, 1)}
+                    disabled={loadingEventId === event.id}
+                  >
+                    {loadingEventId === event.id ? "Reserving..." : "Reserve Ticket"}
+                  </Button>
+                </div>
+              </Card>
+            ))
+          ) : (
+            <div className="col-span-full py-20 text-center">
+              <p className="text-slate-400 text-lg italic">
+                No events found matching your search.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

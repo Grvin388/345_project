@@ -1,91 +1,108 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, MapPin, Pencil, Plus, Trash2, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  AdminEvent,
+  cancelAdminEvent,
+  createAdminEvent,
+  fetchAdminEvents,
+  updateAdminEvent,
+} from "../services/adminEventApi";
 import styles from "../styles/AdminPage.module.css";
 
-type AdminEvent = {
-  id: string;
+type FormData = {
   title: string;
   date: string;
   location: string;
   category: string;
-  status: "ACTIVE" | "CANCELLED";
 };
 
-const initialEvents: AdminEvent[] = [
-  {
-    id: "1",
-    title: "Montreal Jazz Fest",
-    date: "2026-07-01",
-    location: "Montreal",
-    category: "Music",
-    status: "ACTIVE",
-  },
-  {
-    id: "2",
-    title: "Tech Summit",
-    date: "2026-08-15",
-    location: "Toronto",
-    category: "Conference",
-    status: "ACTIVE",
-  },
-  {
-    id: "3",
-    title: "Grand Prix",
-    date: "2026-06-12",
-    location: "Montreal",
-    category: "Sports",
-    status: "CANCELLED",
-  },
-];
+const emptyForm: FormData = {
+  title: "",
+  date: "",
+  location: "",
+  category: "",
+};
 
 export function AdminPage() {
-  const [events, setEvents] = useState<AdminEvent[]>(initialEvents);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [events, setEvents] = useState<AdminEvent[]>([]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    date: "",
-    location: "",
-    category: "",
-  });
+  useEffect(() => {
+    loadEvents();
+  }, []);
 
-  const handleChange = (field: string, value: string) => {
+  async function loadEvents() {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await fetchAdminEvents();
+      setEvents(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load events.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
-  const handleAddEvent = () => {
-    if (!formData.title || !formData.date || !formData.location || !formData.category) {
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData(emptyForm);
+  };
+
+  const validateForm = () => {
+    return (
+      formData.title.trim() &&
+      formData.date.trim() &&
+      formData.location.trim() &&
+      formData.category.trim()
+    );
+  };
+
+  const handleAddEvent = async () => {
+    if (!validateForm()) {
+      setError("Please fill in all fields before adding an event.");
       return;
     }
 
-    const newEvent: AdminEvent = {
-      id: Date.now().toString(),
-      title: formData.title,
-      date: formData.date,
-      location: formData.location,
-      category: formData.category,
-      status: "ACTIVE",
-    };
+    try {
+      setSaving(true);
+      setError(null);
+      setSuccessMessage(null);
 
-    setEvents((prev) => [newEvent, ...prev]);
-    setFormData({
-      title: "",
-      date: "",
-      location: "",
-      category: "",
-    });
+      const createdEvent = await createAdminEvent(formData);
+      setEvents((prev) => [createdEvent, ...prev]);
+      setSuccessMessage("Event added successfully.");
+      resetForm();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to add event.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleStartEdit = (event: AdminEvent) => {
     setEditingId(event.id);
+    setError(null);
+    setSuccessMessage(null);
     setFormData({
       title: event.title,
       date: event.date,
@@ -94,48 +111,58 @@ export function AdminPage() {
     });
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingId) return;
 
-    setEvents((prev) =>
-      prev.map((event) =>
-        event.id === editingId
-          ? {
-              ...event,
-              title: formData.title,
-              date: formData.date,
-              location: formData.location,
-              category: formData.category,
-            }
-          : event
-      )
-    );
+    if (!validateForm()) {
+      setError("Please fill in all fields before saving changes.");
+      return;
+    }
 
-    setEditingId(null);
-    setFormData({
-      title: "",
-      date: "",
-      location: "",
-      category: "",
-    });
+    try {
+      setSaving(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      const updatedEvent = await updateAdminEvent(editingId, formData);
+
+      setEvents((prev) =>
+        prev.map((event) => (event.id === editingId ? updatedEvent : event))
+      );
+
+      setSuccessMessage("Event updated successfully.");
+      resetForm();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update event.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancelEdit = () => {
-    setEditingId(null);
-    setFormData({
-      title: "",
-      date: "",
-      location: "",
-      category: "",
-    });
+    resetForm();
+    setError(null);
+    setSuccessMessage(null);
   };
 
-  const handleCancelEvent = (id: string) => {
-    setEvents((prev) =>
-      prev.map((event) =>
-        event.id === id ? { ...event, status: "CANCELLED" } : event
-      )
-    );
+  const handleCancelEvent = async (id: number) => {
+    try {
+      setCancellingId(id);
+      setError(null);
+      setSuccessMessage(null);
+
+      const cancelledEvent = await cancelAdminEvent(id);
+
+      setEvents((prev) =>
+        prev.map((event) => (event.id === id ? cancelledEvent : event))
+      );
+
+      setSuccessMessage("Event cancelled successfully.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to cancel event.");
+    } finally {
+      setCancellingId(null);
+    }
   };
 
   return (
@@ -148,6 +175,18 @@ export function AdminPage() {
           administrative interface.
         </p>
       </div>
+
+      {error && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-700">
+          {successMessage}
+        </div>
+      )}
 
       <Card className={styles.formCard}>
         <div className={styles.formHeader}>
@@ -205,12 +244,13 @@ export function AdminPage() {
               <Button
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={handleSaveEdit}
+                disabled={saving}
               >
                 <Pencil className="h-4 w-4 mr-2" />
-                Save Changes
+                {saving ? "Saving..." : "Save Changes"}
               </Button>
 
-              <Button variant="outline" onClick={handleCancelEdit}>
+              <Button variant="outline" onClick={handleCancelEdit} disabled={saving}>
                 Cancel
               </Button>
             </>
@@ -218,9 +258,10 @@ export function AdminPage() {
             <Button
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={handleAddEvent}
+              disabled={saving}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add Event
+              {saving ? "Adding..." : "Add Event"}
             </Button>
           )}
         </div>
@@ -234,61 +275,73 @@ export function AdminPage() {
           </p>
         </div>
 
-        <div className={styles.eventGrid}>
-          {events.map((event) => (
-            <Card key={event.id} className={styles.eventCard}>
-              <div className={styles.cardTop}>
-                <span
-                  className={
-                    event.status === "ACTIVE"
-                      ? styles.statusActive
-                      : styles.statusCancelled
-                  }
-                >
-                  {event.status}
-                </span>
-                <span className={styles.categoryBadge}>{event.category}</span>
-              </div>
+        {loading ? (
+          <div className="py-12 text-center">
+            <p className="text-slate-400 text-lg italic">Loading events...</p>
+          </div>
+        ) : (
+          <div className={styles.eventGrid}>
+            {events.map((event) => (
+              <Card key={event.id} className={styles.eventCard}>
+                <div className={styles.cardTop}>
+                  <span
+                    className={
+                      event.status === "ACTIVE"
+                        ? styles.statusActive
+                        : styles.statusCancelled
+                    }
+                  >
+                    {event.status}
+                  </span>
+                  <span className={styles.categoryBadge}>{event.category}</span>
+                </div>
 
-              <h3 className={styles.eventTitle}>{event.title}</h3>
+                <h3 className={styles.eventTitle}>{event.title}</h3>
 
-              <div className={styles.detailRow}>
-                <Calendar className="h-4 w-4" />
-                <span>{event.date}</span>
-              </div>
+                <div className={styles.detailRow}>
+                  <Calendar className="h-4 w-4" />
+                  <span>{event.date}</span>
+                </div>
 
-              <div className={styles.detailRow}>
-                <MapPin className="h-4 w-4" />
-                <span>{event.location}</span>
-              </div>
+                <div className={styles.detailRow}>
+                  <MapPin className="h-4 w-4" />
+                  <span>{event.location}</span>
+                </div>
 
-              <div className={styles.detailRow}>
-                <Tag className="h-4 w-4" />
-                <span>{event.category}</span>
-              </div>
+                <div className={styles.detailRow}>
+                  <Tag className="h-4 w-4" />
+                  <span>{event.category}</span>
+                </div>
 
-              <div className={styles.cardActions}>
-                <Button
-                  variant="outline"
-                  className={styles.editButton}
-                  onClick={() => handleStartEdit(event)}
-                >
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
+                <div className={styles.cardActions}>
+                  <Button
+                    variant="outline"
+                    className={styles.editButton}
+                    onClick={() => handleStartEdit(event)}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
 
-                <Button
-                  className={styles.cancelButton}
-                  onClick={() => handleCancelEvent(event.id)}
-                  disabled={event.status === "CANCELLED"}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  {event.status === "CANCELLED" ? "Cancelled" : "Cancel Event"}
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
+                  <Button
+                    className={styles.cancelButton}
+                    onClick={() => handleCancelEvent(event.id)}
+                    disabled={
+                      event.status === "CANCELLED" || cancellingId === event.id
+                    }
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    {event.status === "CANCELLED"
+                      ? "Cancelled"
+                      : cancellingId === event.id
+                      ? "Cancelling..."
+                      : "Cancel Event"}
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
