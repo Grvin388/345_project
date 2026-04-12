@@ -1,21 +1,66 @@
-import { useState, useEffect } from "react";
-import { fetchEvents, EventData } from "../services/eventApi";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { EventData, fetchEvents } from "../services/eventApi";
 
 export function useEvents() {
-  const [events, setEvents] = useState<EventData[]>([]);
+  const [allEvents, setAllEvents] = useState<EventData[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchEvents().then((data) => setEvents(data));
+    async function loadEvents() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await fetchEvents();
+        setAllEvents(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load events.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadEvents();
   }, []);
 
-  // Filter logic to fulfill the functional requirement
-  const filteredEvents = events.filter(
-    (e) =>
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.category.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const events = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
 
-  return { events: filteredEvents, searchQuery, setSearchQuery };
+    return allEvents
+      .filter((event) => event.status !== "CANCELLED")
+      .filter((event) => {
+        if (!query) return true;
+
+        return (
+          event.title.toLowerCase().includes(query) ||
+          event.location.toLowerCase().includes(query) ||
+          event.category.toLowerCase().includes(query)
+        );
+      });
+  }, [allEvents, searchQuery]);
+
+  return {
+    events,
+    loading,
+    error,
+    searchQuery,
+    setSearchQuery,
+    refreshEvents: async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await fetchEvents();
+        setAllEvents(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to refresh events.");
+      } finally {
+        setLoading(false);
+      }
+    },
+  };
 }

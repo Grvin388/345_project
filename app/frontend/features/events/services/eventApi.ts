@@ -1,16 +1,33 @@
+const API_BASE_URL = "http://localhost:8080/api";
+
 export interface EventData {
-  id: string;
+  id: number;
   title: string;
   date: string;
   location: string;
   category: string;
+  status: "ACTIVE" | "CANCELLED";
 }
 
 export async function fetchEvents(): Promise<EventData[]> {
-  // Simulating a fetch from your Spring Boot Java backend [cite: 7]
-  return [
-    { id: "1", title: "Montreal Jazz Fest", date: "2026-07-01", location: "Montreal", category: "Music" },
-    { id: "2", title: "Tech Summit", date: "2026-08-15", location: "Toronto", category: "Conference" },
-    { id: "3", title: "Grand Prix", date: "2026-06-12", location: "Montreal", category: "Sports" }
-  ];
+  const response = await fetch(`${API_BASE_URL}/events`, {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Failed to fetch events.");
+  }
+
+  const data = await response.json();
+
+  return data.map((event: any) => ({
+    id: Number(event.id),
+    title: event.title,
+    date: event.date,
+    location: event.location,
+    category: event.category,
+    status: event.status ?? "ACTIVE",
+  }));
 }
