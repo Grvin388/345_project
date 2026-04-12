@@ -1,0 +1,218 @@
+.adminPage {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.heroSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.heroBadge {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.heroTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+}
+
+.heroSubtitle {
+  max-width: 42rem;
+  color: #64748b;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.formCard {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  background: white;
+}
+
+.formHeader {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sectionDescription {
+  margin-top: 0.35rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.formActions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.listSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.listHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.eventGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .eventGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .eventGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.eventCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  background: white;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.statusActive {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background-color: #ecfdf5;
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.statusCancelled {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background-color: #fef2f2;
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.eventTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.editButton {
+  border-color: #cbd5e1;
+}
+
+.cancelButton {
+  background-color: #dc2626;
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #b91c1c;
+}
