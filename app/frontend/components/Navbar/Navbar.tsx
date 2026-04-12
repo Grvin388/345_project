@@ -20,7 +20,7 @@ export function Navbar() {
         </Link>
 
         {/* Center Links */}
-        <div className={styles.navLinks}>
+        <div className={styles.navLinks}> 
           <Link href="/" className={styles.navLink}>
             Browse Events
           </Link>

@@ -1,7 +1,6 @@
 "use client";
 
-import { getAuth } from "firebase/auth";
-
+import { auth } from "@/lib/firebase";
 const API_BASE_URL = "http://localhost:8080/api";
 
 export type ReservationPayload = {
@@ -10,7 +9,6 @@ export type ReservationPayload = {
 };
 
 export async function reserveTicket(payload: ReservationPayload) {
-  const auth = getAuth();
   const user = auth.currentUser;
 
   if (!user) {
@@ -35,4 +33,3 @@ export async function reserveTicket(payload: ReservationPayload) {
 
   return response.json();
 }
-
