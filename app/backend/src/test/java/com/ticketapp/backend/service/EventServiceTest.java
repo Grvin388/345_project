@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +46,7 @@ class EventServiceTest {
         List<Event> result = eventService.getAllEvents();
 
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getTitle()).isEqualTo("Concert A");
+        assertEquals("Concert A", result.get(0).getTitle());
     }
 
     @Test
@@ -56,8 +57,8 @@ class EventServiceTest {
 
         Event result = eventService.addEvent(request);
 
-        assertThat(result.getStatus()).isEqualTo("ACTIVE");
-        assertThat(result.getTitle()).isEqualTo("Concert");
+        assertEquals("ACTIVE", result.getStatus());
+        assertEquals("Concert", result.getTitle());
     }
 
     @Test
@@ -71,9 +72,9 @@ class EventServiceTest {
 
         Event result = eventService.updateEvent(1L, request);
 
-        assertThat(result.getTitle()).isEqualTo("New Title");
-        assertThat(result.getLocation()).isEqualTo("New City");
-        assertThat(result.getCategory()).isEqualTo("New Cat");
+        assertEquals("New Title", result.getTitle());
+        assertEquals("New City", result.getLocation());
+        assertEquals("New Cat", result.getCategory());
     }
 
     @Test
@@ -93,7 +94,7 @@ class EventServiceTest {
 
         Event result = eventService.cancelEvent(1L);
 
-        assertThat(result.getStatus()).isEqualTo("CANCELLED");
+        assertEquals("CANCELLED", result.getStatus());
     }
 
     @Test

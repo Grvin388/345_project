@@ -7,6 +7,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -43,10 +44,10 @@ class ReservationRepositoryTest {
         Reservation saved = reservationRepository.save(reservation);
 
         assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getEventId()).isEqualTo(5L);
-        assertThat(saved.getUserUid()).isEqualTo("uid-carol");
-        assertThat(saved.getUserEmail()).isEqualTo("carol@test.com");
-        assertThat(saved.getQuantity()).isEqualTo(4);
-        assertThat(saved.getStatus()).isEqualTo("CONFIRMED");
+        assertEquals(5L, saved.getEventId());
+        assertEquals("uid-carol", saved.getUserUid());
+        assertEquals("carol@test.com", saved.getUserEmail());
+        assertEquals(4, saved.getQuantity());
+        assertEquals("CONFIRMED", saved.getStatus());
     }
 }

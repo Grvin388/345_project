@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
@@ -34,9 +35,9 @@ class EmailServiceTest {
         verify(mailSender).send(messageCaptor.capture());
 
         SimpleMailMessage message = messageCaptor.getValue();
-        assertThat(message.getFrom()).isEqualTo("alex18288@gmail.com");
+        assertEquals("alex18288@gmail.com", message.getFrom());
         assertThat(message.getTo()).containsExactly("user@test.com");
-        assertThat(message.getSubject()).isEqualTo("Reservation Confirmed");
+        assertEquals("Reservation Confirmed", message.getSubject());
         assertThat(message.getText()).contains("Event ID: 42");
         assertThat(message.getText()).contains("Quantity: 3");
         assertThat(message.getText()).contains("Status: CONFIRMED");

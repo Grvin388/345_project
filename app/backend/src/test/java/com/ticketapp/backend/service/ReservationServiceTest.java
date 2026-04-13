@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,10 +44,10 @@ class ReservationServiceTest {
 
         Reservation result = reservationService.createReservation(request, "uid123", "user@test.com");
 
-        assertThat(result.getStatus()).isEqualTo("CONFIRMED");
-        assertThat(result.getUserUid()).isEqualTo("uid123");
-        assertThat(result.getEventId()).isEqualTo(1L);
-        assertThat(result.getQuantity()).isEqualTo(2);
+        assertEquals("CONFIRMED", result.getStatus());
+        assertEquals("uid123", result.getUserUid());
+        assertEquals(1L, result.getEventId());
+        assertEquals(2, result.getQuantity());
     }
 
     @Test
@@ -87,7 +88,7 @@ class ReservationServiceTest {
 
         Reservation result = reservationService.cancelReservation(1L, "uid123");
 
-        assertThat(result.getStatus()).isEqualTo("CANCELLED");
+        assertEquals("CANCELLED", result.getStatus());
     }
 
     @Test
