@@ -6,27 +6,43 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 @Configuration
 public class FirebaseConfig {
 
+    protected boolean shouldInitializeFirebase() {
+        return FirebaseApp.getApps().isEmpty();
+    }
+
+    protected InputStream getServiceAccountStream() {
+        return getClass().getClassLoader().getResourceAsStream("firebase-service-account.json");
+    }
+
+    protected GoogleCredentials loadCredentials(InputStream serviceAccount) throws IOException {
+        return GoogleCredentials.fromStream(serviceAccount);
+    }
+
+    protected void initializeFirebaseApp(FirebaseOptions options) {
+        FirebaseApp.initializeApp(options);
+    }
+
     @PostConstruct
     public void init() {
         try {
-            if (FirebaseApp.getApps().isEmpty()) {
-                InputStream serviceAccount =
-                        getClass().getClassLoader().getResourceAsStream("firebase-service-account.json");
+            if (shouldInitializeFirebase()) {
+                InputStream serviceAccount = getServiceAccountStream();
 
                 if (serviceAccount == null) {
                     throw new RuntimeException("firebase-service-account.json not found in resources folder");
                 }
 
                 FirebaseOptions options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setCredentials(loadCredentials(serviceAccount))
                         .build();
 
-                FirebaseApp.initializeApp(options);
+                initializeFirebaseApp(options);
                 System.out.println("Firebase initialized successfully.");
             }
         } catch (Exception e) {
