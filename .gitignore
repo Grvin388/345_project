@@ -1,1 +1,2 @@
 firebase-service-account.json
+!app/backend/src/test/resources/firebase-service-account.json
